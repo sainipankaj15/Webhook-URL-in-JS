@@ -45,7 +45,7 @@ const auth = async (req, res, next) => {
             // to pass on req to other functions otherwise req will be blocked
 }
 
-app.post('/trading', auth , (req, res) => {
+app.post('/trading', auth , async (req, res) => {
 
     var message = ""
     message = req.body["message"]
@@ -55,14 +55,13 @@ app.post('/trading', auth , (req, res) => {
 
     try {
         //listing messages in users mailbox 
-         sendMessageToTelegram(message)
+          await sendMessageToTelegram(message)
           res.status(200).json({ message: "Got your webhook Request" });
         } catch (err) {
-          next(err);
+            console.error('Error handling webhook request:', err);
+            res.status(500).json({ error: 'Failed to handle webhook request' });
         }
 
-
-    
 });
 
 app.listen(PORT, () => {
