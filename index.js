@@ -41,7 +41,6 @@ const auth = async (req, res, next) => {
     if (secertKeyComing !== process.env.SECERTKEY)
     return res.sendStatus(401);
 
-
     next(); // this is middleware so next() must be called unconditionally 
             // to pass on req to other functions otherwise req will be blocked
 }
@@ -54,8 +53,16 @@ app.post('/trading', auth , (req, res) => {
     if (!message)
      message = "Something goes wrong";
 
-    sendMessageToTelegram(message)
-    res.status(200).json({ message: "Got your webhook Request" });
+    try {
+        //listing messages in users mailbox 
+         sendMessageToTelegram(message)
+          res.status(200).json({ message: "Got your webhook Request" });
+        } catch (err) {
+          next(err);
+        }
+
+
+    
 });
 
 app.listen(PORT, () => {
