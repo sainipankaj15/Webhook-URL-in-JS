@@ -1,4 +1,8 @@
 const express = require('express');
+// const fetch = require('node-fetch'); // Import node-fetch
+
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
 require('dotenv').config();
 
 const app = express();
