@@ -49,7 +49,9 @@ const auth = async (req, res, next) => {
             // to pass on req to other functions otherwise req will be blocked
 }
 
-app.post('/trading', auth , async (req, res) => {
+// app.post('/trading', auth , async (req, res) => {
+
+app.post('/trading', async (req, res) => {
 
     var message = ""
     message = req.body["message"]
