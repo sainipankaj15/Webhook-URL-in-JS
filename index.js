@@ -73,10 +73,15 @@ app.post('/trading', async (req, res) => {
 app.post('/tiqswh', async (req, res) => {
 
     var message = ""
-    message = req.body["message"]
+    // message = req.body["message"]
+    // console.log(message)
+
+    // Convert the entire request body to a JSON string
+    message = JSON.stringify(req.body);
+    console.log(message);
 
     if (!message)
-     message = "Something goes wrong";
+     message = "Wrong";
 
     try {
         //listing messages in users mailbox 
