@@ -70,6 +70,25 @@ app.post('/trading', async (req, res) => {
 
 });
 
+app.post('/tiqswh', async (req, res) => {
+
+    var message = ""
+    message = req.body["message"]
+
+    if (!message)
+     message = "Something goes wrong";
+
+    try {
+        //listing messages in users mailbox 
+          await sendMessageToTelegram(message)
+          res.status(200).json({ message: "Got your webhook Request" });
+        } catch (err) {
+            console.error('Error handling webhook request:', err);
+            res.status(500).json({ error: 'Failed to handle webhook request' });
+        }
+
+});
+
 app.listen(PORT, () => {
     console.log(`Listening on Port ${PORT}`);
 });
