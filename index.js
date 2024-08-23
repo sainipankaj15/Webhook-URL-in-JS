@@ -96,48 +96,112 @@ app.post('/trading', async (req, res) => {
 });
 
 app.post('/manu-wh', async (req, res) => {
-
-    var message = ""
-    // message = req.body["message"]
-    // console.log(message)
-
-    // Convert the entire request body to a JSON string
-    // message = JSON.stringify(req.body);
-    message = req.body;
-    // console.log(message);
-
-    if (!message)
-     message = "Wrong";
-
-    // Extract the required information
-    let symbol = message.symbol;
-    let qty = message.qty;
-    let avgPrice = message.avgPrice;
-    let fillTime = message.fillTime;
-    let transactionType = message.transactionType;
-
-    // Change transaction type to BUY or SELL based on the value
-    if (transactionType === "B") {
-        transactionType = "BUY";
-    } else if (transactionType === "S") {
-        transactionType = "SELL";
-    }
-
-    // Create a single string with all the information on new lines, including the disclaimer
-    let combinedMessage = `Symbol: ${symbol}\nQuantity: ${qty}\nAverage Price: ${avgPrice}\nFill Time: ${fillTime}\nTransaction Type: ${transactionType}\n\nDisclaimer: For educational purposes`;
-
-    // Log the combined string with new lines and disclaimer
-    console.log(combinedMessage);
-
     try {
-        //listing messages in users mailbox 
-          await sendMessageToTelegramCompany(combinedMessage)
-          res.status(200).json({ message: "Got your webhook Request" });
-        } catch (err) {
-            console.error('Error handling webhook request:', err);
-            res.status(500).json({ error: 'Failed to handle webhook request' });
+        // Extract the incoming request body
+        let message = req.body;
+
+        // Validate the incoming message
+        if (!message) {
+            return res.status(400).json({ error: "Invalid request body" });
         }
+
+        // Extract the required information
+        let symbol = message.symbol;
+        let qty = message.qty;
+        let avgPrice = message.avgPrice;
+        let fillTime = message.fillTime;
+        let transactionType = message.transactionType;
+        let status = message.status; // Extract the status
+
+        // Validate required fields
+        if (!symbol || !qty || !avgPrice || !fillTime || !transactionType || !status) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        // Check if the status is 'COMPLETE'
+        if (status !== "COMPLETE") {
+            return res.status(200).json({ message: "No action needed for other order status" });
+        }
+
+        // Transform transaction type to 'BUY' or 'SELL'
+        if (transactionType === "B") {
+            transactionType = "BUY";
+        } else if (transactionType === "S") {
+            transactionType = "SELL";
+        }
+
+        // Combine the extracted information into a single message string
+        let combinedMessage = `Symbol: ${symbol}\nQuantity: ${qty}\nAverage Price: ${avgPrice}\nFill Time: ${fillTime}\nTransaction Type: ${transactionType}\n\nDisclaimer: For educational purposes`;
+
+        // Log the combined message
+        console.log(combinedMessage);
+
+        // Send the combined message to Telegram or any external service
+        await sendMessageToTelegramCompany(combinedMessage);
+
+        // Respond to the webhook request
+        res.status(200).json({ message: "Webhook request processed successfully" });
+
+    } catch (err) {
+        // Handle errors gracefully
+        console.error('Error handling webhook request:', err);
+        res.status(500).json({ error: 'Failed to handle webhook request' });
+    }
 });
+app.post('/pankaj-wh', async (req, res) => {
+    try {
+        // Extract the incoming request body
+        let message = req.body;
+
+        // Validate the incoming message
+        if (!message) {
+            return res.status(400).json({ error: "Invalid request body" });
+        }
+
+        // Extract the required information
+        let symbol = message.symbol;
+        let qty = message.qty;
+        let avgPrice = message.avgPrice;
+        let fillTime = message.fillTime;
+        let transactionType = message.transactionType;
+        let status = message.status; // Extract the status
+
+        // Validate required fields
+        if (!symbol || !qty || !avgPrice || !fillTime || !transactionType || !status) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        // Check if the status is 'COMPLETE'
+        if (status !== "COMPLETE") {
+            return res.status(200).json({ message: "No action needed for other order status" });
+        }
+
+        // Transform transaction type to 'BUY' or 'SELL'
+        if (transactionType === "B") {
+            transactionType = "BUY";
+        } else if (transactionType === "S") {
+            transactionType = "SELL";
+        }
+
+        // Combine the extracted information into a single message string
+        let combinedMessage = `Symbol: ${symbol}\nQuantity: ${qty}\nAverage Price: ${avgPrice}\nFill Time: ${fillTime}\nTransaction Type: ${transactionType}\n\nDisclaimer: For educational purposes`;
+
+        // Log the combined message
+        console.log(combinedMessage);
+
+        // Send the combined message to Telegram or any external service
+        await sendMessageToTelegram(combinedMessage);
+
+        // Respond to the webhook request
+        res.status(200).json({ message: "Webhook request processed successfully" });
+
+    } catch (err) {
+        // Handle errors gracefully
+        console.error('Error handling webhook request:', err);
+        res.status(500).json({ error: 'Failed to handle webhook request' });
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`Listening on Port ${PORT}`);
