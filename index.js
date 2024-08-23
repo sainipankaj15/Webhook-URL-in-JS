@@ -104,7 +104,7 @@ app.post('/manu-wh', async (req, res) => {
     // Convert the entire request body to a JSON string
     // message = JSON.stringify(req.body);
     message = req.body;
-    console.log(message);
+    // console.log(message);
 
     if (!message)
      message = "Wrong";
@@ -114,9 +114,17 @@ app.post('/manu-wh', async (req, res) => {
     let qty = message.qty;
     let avgPrice = message.avgPrice;
     let fillTime = message.fillTime;
+    let transactionType = message.transactionType;
+
+    // Change transaction type to BUY or SELL based on the value
+    if (transactionType === "B") {
+        transactionType = "BUY";
+    } else if (transactionType === "S") {
+        transactionType = "SELL";
+    }
 
     // Create a single string with all the information on new lines, including the disclaimer
-    let combinedMessage = `Symbol: ${symbol}\nQuantity: ${qty}\nAverage Price: ${avgPrice}\nFill Time: ${fillTime}\n\nDisclaimer: For educational purposes`;
+    let combinedMessage = `Symbol: ${symbol}\nQuantity: ${qty}\nAverage Price: ${avgPrice}\nFill Time: ${fillTime}\nTransaction Type: ${transactionType}\n\nDisclaimer: For educational purposes`;
 
     // Log the combined string with new lines and disclaimer
     console.log(combinedMessage);
