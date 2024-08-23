@@ -36,6 +36,31 @@ async function sendMessageToTelegram(message) {
         throw new Error('Failed to send notification');
     }
 }
+async function sendMessageToTelegramCompany(message) {
+
+    var botToken = process.env.TELEGRAM_BOT_TOKEN_COM
+    var chatId = process.env.TELEGRAM_CHAT_ID_COM
+
+    try {
+        const apiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message,
+            }),
+        });
+
+        const data = await response.json();
+        return data.ok;
+    } catch (error) {
+        console.error('Error sending notification:', error);
+        throw new Error('Failed to send notification');
+    }
+}
 
 const auth = async (req, res, next) => {
     
@@ -70,28 +95,40 @@ app.post('/trading', async (req, res) => {
 
 });
 
-app.post('/tiqswh', async (req, res) => {
+app.post('/manu-wh', async (req, res) => {
 
     var message = ""
     // message = req.body["message"]
     // console.log(message)
 
     // Convert the entire request body to a JSON string
-    message = JSON.stringify(req.body);
+    // message = JSON.stringify(req.body);
+    message = req.body;
     console.log(message);
 
     if (!message)
      message = "Wrong";
 
+    // Extract the required information
+    let symbol = message.symbol;
+    let qty = message.qty;
+    let avgPrice = message.avgPrice;
+    let fillTime = message.fillTime;
+
+    // Create a single string with all the information on new lines, including the disclaimer
+    let combinedMessage = `Symbol: ${symbol}\nQuantity: ${qty}\nAverage Price: ${avgPrice}\nFill Time: ${fillTime}\n\nDisclaimer: For educational purposes`;
+
+    // Log the combined string with new lines and disclaimer
+    console.log(combinedMessage);
+
     try {
         //listing messages in users mailbox 
-          await sendMessageToTelegram(message)
+          await sendMessageToTelegramCompany(combinedMessage)
           res.status(200).json({ message: "Got your webhook Request" });
         } catch (err) {
             console.error('Error handling webhook request:', err);
             res.status(500).json({ error: 'Failed to handle webhook request' });
         }
-
 });
 
 app.listen(PORT, () => {
